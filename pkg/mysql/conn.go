@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"mac-laren/pkg/config"
 	"mac-laren/pkg/logger"
 
@@ -11,12 +12,8 @@ import (
 func InitConnection(conf *config.Config) (*gorm.DB, error) {
 
 	db, err := gorm.Open(mysql.New(mysql.Config{
-		DSN:                       "gorm:gorm@tcp(127.0.0.1:3306)/gorm?charset=utf8&parseTime=True&loc=Local", // data source name
-		DefaultStringSize:         256,                                                                        // default size for string fields
-		DisableDatetimePrecision:  true,                                                                       // disable datetime precision, which not supported before MySQL 5.6
-		DontSupportRenameIndex:    true,                                                                       // drop & create when rename index, rename index not supported before MySQL 5.7, MariaDB
-		DontSupportRenameColumn:   true,                                                                       // `change` when rename column, rename column not supported before MySQL 8, MariaDB
-		SkipInitializeWithVersion: false,                                                                      // auto configure based on currently MySQL version
+		DSN:               fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", conf.GetString("MYSQL_USER"), conf.GetString("MYSQL_PASSWORD"), conf.GetString("MYSQL_HOST"), conf.GetString("MYSQL_PORT"), conf.GetString("MYSQL_DATABASE")),
+		DefaultStringSize: 256,
 	}), &gorm.Config{})
 
 	if err != nil {
