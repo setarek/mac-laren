@@ -1,0 +1,32 @@
+version: '3'
+services:
+    order:
+      build: 
+        context: .
+        args: 
+          PROJECT_NAME: "order"
+      env_file:
+          - order/.env
+      ports:
+        - 8080:8080
+      depends_on:
+        - redis-db
+    order_processor:
+      build: 
+        context: .
+        args: 
+          PROJECT_NAME: "order_processor"
+      env_file:
+          - order_processor/.env
+      depends_on:
+        - redis-db
+    redis-db:
+      image: redis:alpine
+      ports:
+        - 6379:6379
+      container_name: redis-db
+
+    
+    
+    
+    
