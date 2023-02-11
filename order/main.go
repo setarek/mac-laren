@@ -2,26 +2,31 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"mac-laren/order/internal/handler"
 	"mac-laren/order/internal/router"
 	"mac-laren/pkg/config"
+	"mac-laren/pkg/logger"
 	"mac-laren/pkg/redis"
 )
 
 const APP_NAME = "order"
 
 func main() {
-	fmt.Println("hello world")
 
-	config, err := config.InitConfig(APP_NAME, "config")
+	currentPath, _ := os.Getwd()
+	// init config
+	config, err := config.InitConfig(APP_NAME, currentPath, "config")
 	if err != nil {
-		panic(fmt.Errorf("error while initializing config: %v+", err))
+		logger.Logger.Error().Err(err).Msg("error while initializing config")
 	}
 
+	// init redis client
 	redisClient := redis.GetRedisClient(config)
 	redisRepository := redis.NewRedirectRepository(redisClient)
 
+	// initialize router
 	router := router.New()
 	v1 := router.Group("/api/v1")
 	handler := handler.NewHandler(redisRepository)

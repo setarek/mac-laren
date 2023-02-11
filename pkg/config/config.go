@@ -7,11 +7,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+// todo: improve config to validate and check variables
 type Config struct {
 	*viper.Viper
 }
 
-func InitConfig(appName string, defaultConfigName string) (*Config, error) {
+func InitConfig(appName string, currentPath string, defaultConfigName string) (*Config, error) {
 
 	config := &Config{viper.New()}
 	config.AutomaticEnv()
@@ -21,7 +22,8 @@ func InitConfig(appName string, defaultConfigName string) (*Config, error) {
 	}
 
 	config.SetConfigName(defaultConfigName)
-	config.AddConfigPath(fmt.Sprintf("%s/config/", appName))
+
+	config.AddConfigPath(fmt.Sprintf("%s/%s/config/", currentPath, appName))
 	config.AddConfigPath(fmt.Sprintf("/go/src/%s/config/", appName))
 	if err := config.ReadInConfig(); err != nil {
 		zlog.Logger.Error().Err(err).Msg("Failed to read config file")
