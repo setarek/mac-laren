@@ -2,15 +2,15 @@ package consumer
 
 import (
 	"encoding/json"
-	"fmt"
 	"mac-laren/order_processor/internal/model"
+	"mac-laren/order_processor/internal/repository"
 	"mac-laren/pkg/config"
 	"mac-laren/pkg/logger"
 	"mac-laren/pkg/redis"
 	"time"
 )
 
-func ConsumeOrder(config *config.Config, redisRepository *redis.RedisRepository) {
+func ConsumeOrder(config *config.Config, redisRepository *redis.RedisRepository, repository *repository.OrderRepository) {
 
 	for {
 
@@ -30,10 +30,11 @@ func ConsumeOrder(config *config.Config, redisRepository *redis.RedisRepository)
 			logger.Logger.Error().Err(err).Msg("error while unmarshalling order")
 		}
 
-		fmt.Println("result", order)
+		err = repository.CreateOrder(order)
+		if err != nil {
+			logger.Logger.Error().Err(err).Msg("error while creating order")
+		}
 
-		// save to mysql
-		// notify use
 	}
 
 }
