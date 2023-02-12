@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	zlog "mac-laren/pkg/logger"
+	"mac-laren/pkg/logger"
 
 	"github.com/spf13/viper"
 )
@@ -17,7 +17,7 @@ func InitConfig(appName string, currentPath string, defaultConfigName string) (*
 	config := &Config{viper.New()}
 	config.AutomaticEnv()
 	if err := viper.BindEnv("env"); err != nil {
-		zlog.Logger.Error().Err(err).Msg("error while binding env in config file")
+		logger.Logger.Error().Err(err).Msg("error while binding env in config file")
 		return nil, err
 	}
 
@@ -26,7 +26,7 @@ func InitConfig(appName string, currentPath string, defaultConfigName string) (*
 	config.AddConfigPath(fmt.Sprintf("%s/%s/config/", currentPath, appName))
 	config.AddConfigPath(fmt.Sprintf("/go/src/%s/config/", appName))
 	if err := config.ReadInConfig(); err != nil {
-		zlog.Logger.Error().Err(err).Msg("Failed to read config file")
+		logger.Logger.Error().Err(err).Msg("Failed to read config file")
 	}
 
 	config.WatchConfig()

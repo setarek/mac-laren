@@ -24,7 +24,7 @@ func main() {
 
 	// init redis client
 	redisClient := redis.GetRedisClient(config)
-	redisRepository := redis.NewRedirectRepository(redisClient)
+	redisRepository := redis.NewRedisRepository(redisClient)
 
 	// initialize router
 	router := router.New()

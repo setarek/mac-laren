@@ -10,7 +10,7 @@ type RedisRepository struct {
 	rc *redis.Client
 }
 
-func NewRedirectRepository(rc *redis.Client) *RedisRepository {
+func NewRedisRepository(rc *redis.Client) *RedisRepository {
 	return &RedisRepository{rc: rc}
 }
 

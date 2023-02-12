@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	rsErr "mac-laren/order/internal/error"
-	zlog "mac-laren/pkg/logger"
+	"mac-laren/pkg/logger"
 	"mac-laren/pkg/redis"
 )
 
@@ -28,7 +28,7 @@ func (h *OrderHandler) Order(ctx echo.Context) error {
 
 	var request OrderRequest
 	if err := ctx.Bind(&request); err != nil {
-		zlog.Logger.Error().Err(err).Msg("error while binding body request")
+		logger.Logger.Error().Err(err).Msg("error while binding body request")
 		return ctx.JSON(http.StatusUnprocessableEntity, ErrorResponse{
 			Message: rsErr.ErrEmptyBodyRequest.Error(),
 		})
@@ -38,14 +38,14 @@ func (h *OrderHandler) Order(ctx echo.Context) error {
 
 	b, err := json.Marshal(request)
 	if err != nil {
-		zlog.Logger.Error().Err(err).Msg("error while marshalling order request")
+		logger.Logger.Error().Err(err).Msg("error while marshalling order request")
 		return ctx.JSON(http.StatusUnprocessableEntity, ErrorResponse{
 			Message: rsErr.ErrServer.Error(),
 		})
 	}
 
 	if _, err := h.RedisRepository.LPush(redis.NEW_ORDER, string(b)); err != nil {
-		zlog.Logger.Error().Err(err).Msg("error while pushing new order to queue")
+		logger.Logger.Error().Err(err).Msg("error while pushing new order to queue")
 		return ctx.JSON(http.StatusBadRequest, ErrorResponse{
 			Message: rsErr.ErrServer.Error(),
 		})

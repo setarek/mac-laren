@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"os"
 	"os/signal"
 
@@ -19,6 +17,7 @@ const APP_NAME = "order_processor"
 
 func main() {
 
+	// todo: get current path by function
 	currentPath := "/go/src/order_processor"
 	config, err := config.InitConfig(APP_NAME, currentPath, "config")
 	if err != nil {
@@ -26,7 +25,7 @@ func main() {
 	}
 
 	redisClient := redis.GetRedisClient(config)
-	redisRepository := redis.NewRedirectRepository(redisClient)
+	redisRepository := redis.NewRedisRepository(redisClient)
 
 	db, err := mysql.InitConnection(config)
 	if err != nil {
@@ -42,15 +41,15 @@ func main() {
 
 	dbRepository := repository.NewOrderRepository(db)
 
-	content, err := ioutil.ReadFile(fmt.Sprintf("%s/order_processor.lua", currentPath))
-	if err != nil {
-		logger.Logger.Error().Err(err).Msg("error while reading lua script")
-	}
-	result, err := redisRepository.FunctionLoad(string(content))
-	if err != nil {
-		logger.Logger.Error().Err(err).Msg("error while loading lua script at db redis")
-	}
-	logger.Logger.Info().Msgf("lua script loaded at db redis. result: %v", result)
+	// content, err := ioutil.ReadFile(fmt.Sprintf("%s/order_processor.lua", currentPath))
+	// if err != nil {
+	// 	logger.Logger.Error().Err(err).Msg("error while reading lua script")
+	// }
+	// result, err := redisRepository.FunctionLoad(string(content))
+	// if err != nil {
+	// 	logger.Logger.Error().Err(err).Msg("error while loading lua script at db redis")
+	// }
+	// logger.Logger.Info().Msgf("lua script loaded at db redis. result: %v", result)
 
 	go consumer.ConsumeOrder(config, redisRepository, dbRepository)
 
