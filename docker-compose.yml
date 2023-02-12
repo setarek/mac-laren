@@ -7,6 +7,11 @@ services:
       container_name: redis
       volumes:
       - redis-data:/data
+    redis-cli:
+      image: redis:alpine
+      volumes:
+        - scripts:scripts
+      entrypoint: sh -c scripts/redis-init.sh
 
     mysql-db:
       image: mysql:latest
@@ -46,6 +51,7 @@ services:
 volumes:
   mysql-data:
   redis-data:
+  scripts:
 
     
     
