@@ -30,6 +30,8 @@ func ConsumeOrder(config *config.Config, redisRepository *redis.RedisRepository,
 			logger.Logger.Error().Err(err).Msg("error while unmarshalling order")
 		}
 
+		logger.Logger.Info().Str("title", order.Title).Msg("new order comes for process")
+
 		err = repository.CreateOrder(order)
 		if err != nil {
 			logger.Logger.Error().Err(err).Msg("error while creating order")
