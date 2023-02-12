@@ -1,28 +1,5 @@
 version: '3'
 services:
-    order:
-      build: 
-        context: .
-        args: 
-          PROJECT_NAME: "order"
-      env_file:
-          - order/.env
-      ports:
-        - 8080:8080
-      depends_on:
-        - redis
-    order_processor:
-      build: 
-        context: .
-        args: 
-          PROJECT_NAME: "order_processor"
-      env_file:
-          - order_processor/.env
-      depends_on:
-        - redis
-        - mysql-db
-      links:
-        - mysql-db
     redis:
       image: redis:alpine
       ports:
@@ -40,7 +17,32 @@ services:
         MYSQL_ROOT_PASSWORD: test
         MYSQL_DATABASE: maclaren
       volumes:
-        - mysql-data:/var/lib/mysql 
+        - mysql-data:/var/lib/mysql
+    order:
+      build: 
+        context: .
+        args: 
+          PROJECT_NAME: "order"
+      env_file:
+          - order/.env
+      ports:
+        - 8080:8080
+      depends_on:
+        - redis
+    order_processor:
+      build: 
+        context: .
+        args: 
+          PROJECT_NAME: "order_processor"
+      command: cat order_processor/order_processor.lua | redis-cli -x FUNCTION LOAD REPLACE
+      env_file:
+          - order_processor/.env
+      depends_on:
+        - redis
+        - mysql-db
+      links:
+        - mysql-db
+ 
 volumes:
   mysql-data:
   redis-data:
