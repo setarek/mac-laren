@@ -10,7 +10,7 @@ services:
       ports:
         - 8080:8080
       depends_on:
-        - redis-db
+        - redis
     order_processor:
       build: 
         context: .
@@ -19,12 +19,15 @@ services:
       env_file:
           - order_processor/.env
       depends_on:
-        - redis-db
-    redis-db:
+        - redis
+        - mysql-db
+      links:
+        - mysql-db
+    redis:
       image: redis:alpine
       ports:
         - 6379:6379
-      container_name: redis-db
+      container_name: redis
       volumes:
       - redis-data:/data
 
@@ -33,6 +36,9 @@ services:
       container_name: mysql-db
       ports:
         - 3306:3306
+      environment:
+        MYSQL_ROOT_PASSWORD: test
+        MYSQL_DATABASE: maclaren
       volumes:
         - mysql-data:/var/lib/mysql 
 volumes:
