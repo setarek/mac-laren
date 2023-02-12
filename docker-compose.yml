@@ -10,8 +10,8 @@ services:
     redis-cli:
       image: redis:alpine
       volumes:
-        - scripts:scripts
-      entrypoint: sh -c scripts/redis-init.sh
+        - ./scripts/order_processor.lua:/order_processor.lua
+      entrypoint: sh -c "cat /order_processor.lua | redis-cli -h redis -x FUNCTION LOAD REPLACE"
 
     mysql-db:
       image: mysql:latest
